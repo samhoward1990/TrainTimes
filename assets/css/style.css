@@ -1,0 +1,12 @@
+.jumbotron {
+    background-color: brown;
+    color: white;
+}
+
+label {
+    display: block;
+}
+
+input {
+    display: block;
+}
