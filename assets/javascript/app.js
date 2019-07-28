@@ -12,18 +12,14 @@ firebase.initializeApp(firebaseConfig);
 
 var database = firebase.database();
 
-var trainName = "";
-var destination = "";
-var firstTrainTime = 0;
-var frequency = 0;
 
 $("#submit-button").on("click", function (event) {
     event.preventDefault();
 
-    trainName = $("#train-name").val().trim();
-    destination = $("#destination").val().trim();
-    firstTrainTime = $("#first-train-time").val().trim();
-    frequency = $("#frequency").val().trim();
+    var trainName = $("#train-name").val().trim();
+    var destination = $("#destination").val().trim();
+    var firstTrainTime = $("#first-train-time").val().trim();
+    var frequency = $("#frequency").val().trim();
 
     database.ref().push({
         trainName: trainName,
@@ -31,9 +27,32 @@ $("#submit-button").on("click", function (event) {
         firstTrainTime: firstTrainTime,
         frequency: frequency
     });
+
+    $("#train-name").val("");
+    $("#destination").val("");
+    $("#first-train-time").val("");
+    $("#frequency").val("");
     database.ref.on("child_added", function (snapshot) {
         snapshotValue = snapshot.val();
+        var trainName = snapshot.val().trainName;
+        var destination = snapshot.val().destination;
+        var firstTrainTime = snapshot.val().firstTrainTime;
+        var frequency = snapshot.val().frequency;
+        var firstTrainTimeMilitary = moment.unix(firstTrainTime).format("HH:mm");
+        var frequencyMinutes = moment.unix(frequency).format("m");
+        var nextArrival = moment(firstTrainTimeMilitary).diff(moment(frequency, "X"), "HH:mm");
+        var minutesAway = moment() - frequency;
 
-        console.log(snapshotValue.trainName);
+        var tableRow = $("<tr>").append(
+            $("<td>").text(trainName),
+            $("<td>").text(destination),
+            $("<td>").text(firstTrainTimeMilitary),
+            $("<td>").text(frequencyMinutes),
+            $("<td>").text(nextArrival),
+            $("<td>").text(minutesAway)
+        );
+        $("#train-table").append(tableRow);
+
     });
+
 });
