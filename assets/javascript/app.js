@@ -10,11 +10,30 @@ var firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-var database = firebase.database;
+var database = firebase.database();
 
 var trainName = "";
 var destination = "";
 var firstTrainTime = 0;
 var frequency = 0;
 
+$("#submit-button").on("click", function (event) {
+    event.preventDefault();
 
+    trainName = $("#train-name").val().trim();
+    destination = $("#destination").val().trim();
+    firstTrainTime = $("#first-train-time").val().trim();
+    frequency = $("#frequency").val().trim();
+
+    database.ref().push({
+        trainName: trainName,
+        destination: destination,
+        firstTrainTime: firstTrainTime,
+        frequency: frequency
+    });
+    database.ref.on("child_added", function (snapshot) {
+        snapshotValue = snapshot.val();
+
+        console.log(snapshotValue.trainName);
+    });
+});
